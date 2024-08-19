@@ -1,0 +1,15 @@
+# Source files
+src/**
+
+# Configs and docs
+.vscode/**
+.gitignore
+tsconfig.json
+vsc-extension-quickstart.md
+
+# Tests
+.vscode-test/**
+
+# Exclude all .ts files, but keep definitions
+**/*.ts
+!**/*.d.ts
