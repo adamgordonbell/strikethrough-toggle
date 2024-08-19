@@ -1,8 +1,8 @@
 {
   "name": "strikethrough-toggle",
   "displayName": "Strikethrough Toggle",
-  "description": "Toggle strikethrough on the current line in Markdown files",
-  "version": "0.0.1",
+  "description": "Toggle strikethrough on the current line in Markdown files and display strikethrough percentage",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.60.0"
   },
@@ -14,7 +14,7 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:extension.toggleStrikethrough"
+    "onLanguage:markdown"
   ],
   "main": "./out/extension.js",
   "contributes": {
