@@ -13,19 +13,13 @@ export function activate(context: vscode.ExtensionContext) {
             const selection = editor.selection;
             const line = document.lineAt(selection.active.line);
 
-            editor.edit(editBuilder => {
-                if (line.text.trim().startsWith('~~') && line.text.trim().endsWith('~~')) {
-                    // Remove strikethrough
-                    const newText = line.text.replace(/^(\s*)~~(.*)~~(\s*)$/, '$1$2$3');
-                    editBuilder.replace(line.range, newText);
-                } else {
-                    // Add strikethrough
-                    const newText = line.text.replace(/^(\s*)(.*)(\s*)$/, '$1~~$2~~$3');
-                    editBuilder.replace(line.range, newText);
-                }
-            }).then(() => {
-                updateStatusBar(document);
-            });
+            if (isHeading(line.text)) {
+                toggleStrikethroughBelowHeading(editor, line.lineNumber);
+            } else {
+                toggleStrikethroughLine(editor, line);
+            }
+
+            updateStatusBar(document);
         }
     });
 
@@ -49,6 +43,54 @@ export function activate(context: vscode.ExtensionContext) {
     if (vscode.window.activeTextEditor) {
         updateStatusBar(vscode.window.activeTextEditor.document);
     }
+}
+
+function isHeading(text: string): boolean {
+    return /^#{1,6}\s/.test(text.trim());
+}
+
+function toggleStrikethroughLine(editor: vscode.TextEditor, line: vscode.TextLine) {
+    editor.edit(editBuilder => {
+        if (line.text.trim().startsWith('~~') && line.text.trim().endsWith('~~')) {
+            // Remove strikethrough
+            const newText = line.text.replace(/^(\s*)~~(.*)~~(\s*)$/, '$1$2$3');
+            editBuilder.replace(line.range, newText);
+        } else {
+            // Add strikethrough
+            const newText = line.text.replace(/^(\s*)(.*)(\s*)$/, '$1~~$2~~$3');
+            editBuilder.replace(line.range, newText);
+        }
+    });
+}
+
+function toggleStrikethroughBelowHeading(editor: vscode.TextEditor, startLineNumber: number) {
+    const document = editor.document;
+    let endLineNumber = document.lineCount - 1;
+
+    // Find the next heading or end of document
+    for (let i = startLineNumber + 1; i < document.lineCount; i++) {
+        if (isHeading(document.lineAt(i).text)) {
+            endLineNumber = i - 1;
+            break;
+        }
+    }
+
+    editor.edit(editBuilder => {
+        for (let i = startLineNumber + 1; i <= endLineNumber; i++) {
+            const line = document.lineAt(i);
+            if (line.text.trim() !== '') {
+                if (line.text.trim().startsWith('~~') && line.text.trim().endsWith('~~')) {
+                    // Remove strikethrough
+                    const newText = line.text.replace(/^(\s*)~~(.*)~~(\s*)$/, '$1$2$3');
+                    editBuilder.replace(line.range, newText);
+                } else {
+                    // Add strikethrough
+                    const newText = line.text.replace(/^(\s*)(.*)(\s*)$/, '$1~~$2~~$3');
+                    editBuilder.replace(line.range, newText);
+                }
+            }
+        }
+    });
 }
 
 function updateStatusBar(document: vscode.TextDocument) {
