@@ -33,15 +33,6 @@ uninstall() {
     code --uninstall-extension adamgordonbell.strikethrough-toggle
 }
 
-dev() {
-    echo "Starting development environment..."
-    code .
-}
-
-test() {
-    echo "Running tests..."
-    npm test
-}
 
 clean() {
     echo "Cleaning build artifacts..."
@@ -49,19 +40,7 @@ clean() {
     rm -f *.vsix
 }
 
-publish() {
-    echo "Publishing the extension..."
-    vsce publish
-}
-
 list() {
     echo "Available functions:"
     declare -F | awk '{print $3}' | grep -v '^_'
 }
-
-# Run the function passed as argument
-if [[ $# -gt 0 ]]; then
-    "$@"
-else
-    echo "No function specified. Use 'list' to see available functions."
-fi
