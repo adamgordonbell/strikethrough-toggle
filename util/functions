@@ -51,18 +51,6 @@ rebuild_and_install() {
     build
     package
     install
+    echo "Extension installed. Please reload VS Code window."
+    echo "To reload, use the Command Palette (Ctrl+Shift+P or Cmd+Shift+P) and run 'Developer: Reload Window'"
 }
-
-list() {
-    echo "Available functions:"
-    declare -F | awk '{print $3}' | grep -v '^_'
-}
-
-# Run the function passed as argument
-if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    if [[ $# -gt 0 ]]; then
-        "$@"
-    else
-        echo "No function specified. Use 'list' to see available functions."
-    fi
-fi
