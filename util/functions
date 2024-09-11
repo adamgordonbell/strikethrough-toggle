@@ -39,3 +39,30 @@ clean() {
     rm -rf out
     rm -f *.vsix
 }
+
+dev() {
+    echo "Starting development environment..."
+    code .
+}
+
+rebuild_and_install() {
+    clean
+    install_deps
+    build
+    package
+    install
+}
+
+list() {
+    echo "Available functions:"
+    declare -F | awk '{print $3}' | grep -v '^_'
+}
+
+# Run the function passed as argument
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    if [[ $# -gt 0 ]]; then
+        "$@"
+    else
+        echo "No function specified. Use 'list' to see available functions."
+    fi
+fi
