@@ -49,6 +49,29 @@ export function activate(context: vscode.ExtensionContext) {
 
     context.subscriptions.push(codDisposable);
 
+    let makeDenseDisposable = vscode.commands.registerCommand('extension.makeDense', async () => {
+        const editor = vscode.window.activeTextEditor;
+        if (editor) {
+            const selection = editor.selection;
+            const text = editor.document.getText(selection);
+
+            if (text) {
+                try {
+                    const result = await chainOfDensity(text);
+                    editor.edit(editBuilder => {
+                        editBuilder.replace(selection, result);
+                    });
+                } catch (error: any) {
+                    vscode.window.showErrorMessage(String(error));
+                }
+            } else {
+                vscode.window.showWarningMessage('No text selected.');
+            }
+        }
+    });
+
+    context.subscriptions.push(makeDenseDisposable);
+
     // Update status bar when the active editor changes
     vscode.window.onDidChangeActiveTextEditor(editor => {
         if (editor) {
