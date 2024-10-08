@@ -1,6 +1,6 @@
 # Strikethrough Toggle VS Code Extension
 
-This extension allows you to quickly toggle strikethrough formatting on the current line in Markdown files.
+This extension toggles strikethrough formatting quickly for Markdown files specifically.
 
 ## Building the Extension
 

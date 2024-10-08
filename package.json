@@ -24,12 +24,8 @@
         "title": "Toggle Strikethrough"
       },
       {
-        "command": "extension.makeDense",
-        "title": "Make Dense"
-      },
-      {
         "command": "extension.chainOfDensity",
-        "title": "Chain of Density"
+        "title": "LLM: Make Dense"
       }
     ],
     "menus": {
