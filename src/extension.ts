@@ -206,8 +206,9 @@ Answer in JSON. The JSON should be a list (length 5) of dictionaries whose keys 
             } else {
                 outputChannel.appendLine("Full LLM Response:");
                 outputChannel.appendLine(stdout);
+                const jsonString = stdout.replace(/```json\n|```/g, '');
                 try {
-                    const jsonResponse = JSON.parse(stdout);
+                    const jsonResponse = JSON.parse(jsonString);
                     const lastDenserSummary = jsonResponse[jsonResponse.length - 1].Denser_Summary;
                     resolve(lastDenserSummary.trim());
                 } catch (parseError) {
