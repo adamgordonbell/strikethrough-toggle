@@ -26,24 +26,21 @@ export function activate(context: vscode.ExtensionContext) {
 
     context.subscriptions.push(disposable);
 
-    let codDisposable = vscode.commands.registerCommand('extension.chainOfDensity', () => {
+    let codDisposable = vscode.commands.registerCommand('extension.chainOfDensity', async () => {
         const editor = vscode.window.activeTextEditor;
         if (editor) {
             const selection = editor.selection;
             const text = editor.document.getText(selection);
 
             if (text) {
-                const scriptPath = `${vscode.workspace.rootPath}/util/functions`;
-                exec(`${scriptPath} chain_of_density "${text}"`, (error, stdout, stderr) => {
-                    if (error) {
-                        vscode.window.showErrorMessage(`Error: ${stderr}`);
-                        return;
-                    }
-                    const result = stdout.trim();
+                try {
+                    const result = await chainOfDensity(text);
                     editor.edit(editBuilder => {
                         editBuilder.replace(selection, result);
                     });
-                });
+                } catch (error) {
+                    vscode.window.showErrorMessage(error);
+                }
             } else {
                 vscode.window.showWarningMessage('No text selected.');
             }
@@ -138,10 +135,42 @@ function updateStatusBar(document: vscode.TextDocument) {
     statusBarItem.show();
 }
 
-function chainOfDensity(text: string): string {
-    // Implement the logic of the chain_of_density function here
-    // For now, let's just return the text for demonstration
-    return `Processed: ${text}`;
+function chainOfDensity(text: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+        const wordCount = text.split(/\s+/).length;
+        const systemMessage = `
+You will generate increasingly concise, entity-dense summaries of the provided text.
+
+Repeat the following 2 steps 5 times.
+
+Step 1. Identify 1-3 informative Entities ("; " delimited) from the Article which are missing from the previously generated summary.
+Step 2. Write a new, denser summary of identical length which covers every entity and detail from the previous summary plus the Missing Entities.
+
+A Missing Entity is:
+- Relevant: to the main story.
+- Specific: descriptive yet concise (5 words or fewer).
+- Novel: not in the previous summary.
+- Faithful: present in the Article.
+- Anywhere: located anywhere in the Article.
+
+Guidelines:
+- The first summary should be long (${wordCount} words) yet highly non-specific, containing little information beyond the entities marked as missing. Use overly verbose language and fillers (e.g., "this discusses") to reach ${wordCount} words.
+- Make every word count: rewrite the previous summary to improve flow and make space for additional entities.
+- Make space with fusion, compression, and removal of uninformative phrases like "the discusses".
+- The condensed versions should become highly dense and concise yet self-contained, e.g., easily understood without the Article.
+- Missing entities can appear anywhere in the new summary.
+- Never drop entities from the previous summary. If space cannot be made, add fewer new entities.
+
+Answer in JSON. The JSON should be a list (length 5) of dictionaries whose keys are "Missing_Entities" and "Denser_Summary".`;
+
+        exec(`echo "${text}" | llm --system "${systemMessage}" -`, (error, stdout, stderr) => {
+            if (error) {
+                reject(`Error: ${stderr}`);
+            } else {
+                resolve(stdout.trim());
+            }
+        });
+    });
 }
 
 export function deactivate() {}
