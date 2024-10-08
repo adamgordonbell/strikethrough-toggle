@@ -15,6 +15,7 @@ build() {
 
 install_deps() {
     echo "Installing dependencies..."
+    npm install -g vsce
     npm install
 }
 
