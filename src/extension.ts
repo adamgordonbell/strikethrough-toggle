@@ -33,7 +33,8 @@ export function activate(context: vscode.ExtensionContext) {
             const text = editor.document.getText(selection);
 
             if (text) {
-                exec(`./util/functions chain_of_density "${text}"`, (error, stdout, stderr) => {
+                const scriptPath = `${vscode.workspace.rootPath}/util/functions`;
+                exec(`${scriptPath} chain_of_density "${text}"`, (error, stdout, stderr) => {
                     if (error) {
                         vscode.window.showErrorMessage(`Error: ${stderr}`);
                         return;
