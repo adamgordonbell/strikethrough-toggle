@@ -184,7 +184,7 @@ ${text}
 EOF'`;
         outputChannel.appendLine(`Executing command: ${command}`);
 
-        exec(command, (error, stdout, stderr) => {
+        exec(command, { shell: '/bin/zsh' }, (error, stdout, stderr) => {
             if (error) {
                 outputChannel.appendLine(`Error: ${stderr}`);
                 reject(`Error: ${stderr}`);
