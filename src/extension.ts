@@ -33,7 +33,9 @@ export function activate(context: vscode.ExtensionContext) {
 
             if (text) {
                 const result = chainOfDensity(text);
-                vscode.window.showInformationMessage(result);
+                editor.edit(editBuilder => {
+                    editBuilder.replace(selection, result);
+                });
             } else {
                 vscode.window.showWarningMessage('No text selected.');
             }
