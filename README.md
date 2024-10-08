@@ -47,6 +47,13 @@ There are two ways to install the packaged extension:
 4. Choose 'Install from VSIX...'
 5. Navigate to and select the `.vsix` file you created
 
+If you're on macOS or Linux and the `code` command is not found, you may need to add it to your PATH. Here’s how to do it:
+
+- **macOS:**
+  1. Open Visual Studio Code.
+  2. Press `Cmd` + `Shift` + `P` to open the Command Palette.
+  3. Type `shell command` and choose the option to install the 'code' command in PATH.
+
 ### Method 2: Using the Command Line
 
 Run the following command:
