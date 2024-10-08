@@ -211,8 +211,9 @@ Answer in JSON. The JSON should be a list (length 5) of dictionaries whose keys 
                     const lastDenserSummary = jsonResponse[jsonResponse.length - 1].Denser_Summary;
                     resolve(lastDenserSummary.trim());
                 } catch (parseError) {
-                    outputChannel.appendLine(`JSON Parse Error: ${parseError.message}`);
-                    reject(`JSON Parse Error: ${parseError.message}`);
+                    const error = parseError as Error;
+                    outputChannel.appendLine(`JSON Parse Error: ${error.message}`);
+                    reject(`JSON Parse Error: ${error.message}`);
                 }
             }
         });
