@@ -18,10 +18,25 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
-    "commands": [{
-      "command": "extension.toggleStrikethrough",
-      "title": "Toggle Strikethrough"
-    }]
+    "commands": [
+      {
+        "command": "extension.toggleStrikethrough",
+        "title": "Toggle Strikethrough"
+      },
+      {
+        "command": "extension.chainOfDensity",
+        "title": "Chain of Density"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "extension.chainOfDensity",
+          "when": "editorLangId == markdown",
+          "group": "navigation"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

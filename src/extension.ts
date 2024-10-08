@@ -25,6 +25,23 @@ export function activate(context: vscode.ExtensionContext) {
 
     context.subscriptions.push(disposable);
 
+    let codDisposable = vscode.commands.registerCommand('extension.chainOfDensity', () => {
+        const editor = vscode.window.activeTextEditor;
+        if (editor) {
+            const selection = editor.selection;
+            const text = editor.document.getText(selection);
+
+            if (text) {
+                const result = chainOfDensity(text);
+                vscode.window.showInformationMessage(result);
+            } else {
+                vscode.window.showWarningMessage('No text selected.');
+            }
+        }
+    });
+
+    context.subscriptions.push(codDisposable);
+
     // Update status bar when the active editor changes
     vscode.window.onDidChangeActiveTextEditor(editor => {
         if (editor) {
@@ -109,6 +126,12 @@ function updateStatusBar(document: vscode.TextDocument) {
 
     statusBarItem.text = `Strikethrough: ${percentage.toFixed(1)}%`;
     statusBarItem.show();
+}
+
+function chainOfDensity(text: string): string {
+    // Implement the logic of the chain_of_density function here
+    // For now, let's just return the text for demonstration
+    return `Processed: ${text}`;
 }
 
 export function deactivate() {}
