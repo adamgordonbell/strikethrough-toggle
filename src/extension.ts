@@ -194,11 +194,18 @@ Answer in JSON. The JSON should be a list (length 5) of dictionaries whose keys 
         const systemMessageFile = path.join(tempDir, 'system_message.txt');
         fs.writeFileSync(systemMessageFile, systemMessage);
 
-        exec(`zsh -c 'source ~/.zshrc && echo "${text}" | llm --system "$(cat ${systemMessageFile})" - | jq -r ".[-1].Denser_Summary"'`, (error, stdout, stderr) => {
+        exec(`zsh -c 'source ~/.zshrc && echo "${text}" | llm --system "$(cat ${systemMessageFile})" -'`, (error, stdout, stderr) => {
             if (error) {
                 reject(`Error: ${stderr}`);
             } else {
-                resolve(stdout.trim());
+                console.log("Full LLM Response:", stdout);
+                exec(`echo '${stdout}' | jq -r ".[-1].Denser_Summary"`, (jqError, jqStdout, jqStderr) => {
+                    if (jqError) {
+                        reject(`JQ Error: ${jqStderr}`);
+                    } else {
+                        resolve(jqStdout.trim());
+                    }
+                });
             }
         });
     });
