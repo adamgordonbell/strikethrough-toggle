@@ -199,13 +199,13 @@ Answer in JSON. The JSON should be a list (length 5) of dictionaries whose keys 
                 reject(`Error: ${stderr}`);
             } else {
                 console.log("Full LLM Response:", stdout);
-                exec(`echo '${stdout}' | jq -r ".[-1].Denser_Summary"`, (jqError, jqStdout, jqStderr) => {
-                    if (jqError) {
-                        reject(`JQ Error: ${jqStderr}`);
-                    } else {
-                        resolve(jqStdout.trim());
-                    }
-                });
+                try {
+                    const jsonResponse = JSON.parse(stdout);
+                    const lastDenserSummary = jsonResponse[jsonResponse.length - 1].Denser_Summary;
+                    resolve(lastDenserSummary.trim());
+                } catch (parseError) {
+                    reject(`JSON Parse Error: ${parseError.message}`);
+                }
             }
         });
     });
