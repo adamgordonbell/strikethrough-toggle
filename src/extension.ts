@@ -38,8 +38,8 @@ export function activate(context: vscode.ExtensionContext) {
                     editor.edit(editBuilder => {
                         editBuilder.replace(selection, result);
                     });
-                } catch (error) {
-                    vscode.window.showErrorMessage(error);
+                } catch (error: any) {
+                    vscode.window.showErrorMessage(String(error));
                 }
             } else {
                 vscode.window.showWarningMessage('No text selected.');
