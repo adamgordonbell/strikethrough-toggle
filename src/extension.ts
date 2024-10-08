@@ -1,11 +1,16 @@
 import * as vscode from 'vscode';
 import { exec } from 'child_process';
 
+const outputChannel = vscode.window.createOutputChannel('Strikethrough Toggle');
+
 let statusBarItem: vscode.StatusBarItem;
 
 export function activate(context: vscode.ExtensionContext) {
     statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
     context.subscriptions.push(statusBarItem);
+    context.subscriptions.push(outputChannel);
+
+    outputChannel.appendLine('Extension activated.');
 
     let disposable = vscode.commands.registerCommand('extension.toggleStrikethrough', () => {
         const editor = vscode.window.activeTextEditor;
@@ -196,14 +201,17 @@ Answer in JSON. The JSON should be a list (length 5) of dictionaries whose keys 
 
         exec(`zsh -c 'source ~/.zshrc && echo "${text}" | llm --system "$(cat ${systemMessageFile})" -'`, (error, stdout, stderr) => {
             if (error) {
+                outputChannel.appendLine(`Error: ${stderr}`);
                 reject(`Error: ${stderr}`);
             } else {
-                console.log("Full LLM Response:", stdout);
+                outputChannel.appendLine("Full LLM Response:");
+                outputChannel.appendLine(stdout);
                 try {
                     const jsonResponse = JSON.parse(stdout);
                     const lastDenserSummary = jsonResponse[jsonResponse.length - 1].Denser_Summary;
                     resolve(lastDenserSummary.trim());
                 } catch (parseError) {
+                    outputChannel.appendLine(`JSON Parse Error: ${parseError.message}`);
                     reject(`JSON Parse Error: ${parseError.message}`);
                 }
             }
