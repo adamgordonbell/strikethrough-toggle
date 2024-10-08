@@ -179,7 +179,9 @@ Just return raw JSON string. No code blocks.
         const systemMessageFile = path.join(tempDir, 'system_message.txt');
         fs.writeFileSync(systemMessageFile, systemMessage);
 
-        const command = `zsh -c 'source ~/.zshrc && echo "${text}" | llm --system "$(cat ${systemMessageFile})" -'`;
+        const command = `zsh -c 'source ~/.zshrc && llm --system "$(cat ${systemMessageFile})" - <<EOF
+${text}
+EOF'`;
         outputChannel.appendLine(`Executing command: ${command}`);
 
         exec(command, (error, stdout, stderr) => {
