@@ -163,7 +163,15 @@ Guidelines:
 
 Answer in JSON. The JSON should be a list (length 5) of dictionaries whose keys are "Missing_Entities" and "Denser_Summary".`;
 
-        exec(`zsh -c 'source ~/.zshrc && echo "${text}" | llm --system "${systemMessage}" -'`, (error, stdout, stderr) => {
+        const fs = require('fs');
+        const os = require('os');
+        const path = require('path');
+
+        const tempDir = os.tmpdir();
+        const systemMessageFile = path.join(tempDir, 'system_message.txt');
+        fs.writeFileSync(systemMessageFile, systemMessage);
+
+        exec(`zsh -c 'source ~/.zshrc && echo "${text}" | llm --system "$(cat ${systemMessageFile})" -'`, (error, stdout, stderr) => {
             if (error) {
                 reject(`Error: ${stderr}`);
             } else {
