@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { exec } from 'child_process';
 
 let statusBarItem: vscode.StatusBarItem;
 
@@ -32,9 +33,15 @@ export function activate(context: vscode.ExtensionContext) {
             const text = editor.document.getText(selection);
 
             if (text) {
-                const result = chainOfDensity(text);
-                editor.edit(editBuilder => {
-                    editBuilder.replace(selection, result);
+                exec(`./util/functions chain_of_density "${text}"`, (error, stdout, stderr) => {
+                    if (error) {
+                        vscode.window.showErrorMessage(`Error: ${stderr}`);
+                        return;
+                    }
+                    const result = stdout.trim();
+                    editor.edit(editBuilder => {
+                        editBuilder.replace(selection, result);
+                    });
                 });
             } else {
                 vscode.window.showWarningMessage('No text selected.');
