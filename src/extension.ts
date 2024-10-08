@@ -163,7 +163,7 @@ Guidelines:
 
 Answer in JSON. The JSON should be a list (length 5) of dictionaries whose keys are "Missing_Entities" and "Denser_Summary".`;
 
-        exec(`source ~/.zshrc && echo "${text}" | llm --system "${systemMessage}" -`, (error, stdout, stderr) => {
+        exec(`zsh -c 'source ~/.zshrc && echo "${text}" | llm --system "${systemMessage}" -'`, (error, stdout, stderr) => {
             if (error) {
                 reject(`Error: ${stderr}`);
             } else {
