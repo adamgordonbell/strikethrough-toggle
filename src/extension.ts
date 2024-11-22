@@ -106,33 +106,55 @@ function toggleStrikethroughBelowHeading(editor: vscode.TextEditor, startLineNum
         }
     }
 
-    editor.edit(editBuilder => {
-        // First, handle the heading itself
-        const headingLine = document.lineAt(startLineNumber);
-        if (headingLine.text.trim().startsWith('~~') && headingLine.text.trim().endsWith('~~')) {
-            // Remove strikethrough from heading
-            const newText = headingLine.text.replace(/^(\s*)~~(.*)~~(\s*)$/, '$1$2$3');
-            editBuilder.replace(headingLine.range, newText);
-        } else {
-            // Add strikethrough to heading
-            const newText = headingLine.text.replace(/^(\s*)(.*)(\s*)$/, '$1~~$2~~$3');
-            editBuilder.replace(headingLine.range, newText);
+    // Count struck and unstruck lines
+    let struckCount = 0;
+    let totalLines = 0;
+    for (let i = startLineNumber + 1; i <= endLineNumber; i++) {
+        const line = document.lineAt(i);
+        if (line.text.trim() !== '') {
+            totalLines++;
+            if (line.text.trim().startsWith('~~') && line.text.trim().endsWith('~~')) {
+                struckCount++;
+            }
         }
+    }
 
-        // Then handle all lines below the heading
+    // Determine if we should strike or unstrike based on current state
+    const shouldStrike = struckCount < totalLines;
+
+    editor.edit(editBuilder => {
+        // First handle all lines below the heading
         for (let i = startLineNumber + 1; i <= endLineNumber; i++) {
             const line = document.lineAt(i);
             if (line.text.trim() !== '') {
-                if (line.text.trim().startsWith('~~') && line.text.trim().endsWith('~~')) {
-                    // Remove strikethrough
-                    const newText = line.text.replace(/^(\s*)~~(.*)~~(\s*)$/, '$1$2$3');
-                    editBuilder.replace(line.range, newText);
+                if (shouldStrike) {
+                    // Add strikethrough if not already struck
+                    if (!line.text.trim().startsWith('~~')) {
+                        const newText = line.text.replace(/^(\s*)(.*)(\s*)$/, '$1~~$2~~$3');
+                        editBuilder.replace(line.range, newText);
+                    }
                 } else {
-                    // Add strikethrough
-                    const newText = line.text.replace(/^(\s*)(.*)(\s*)$/, '$1~~$2~~$3');
-                    editBuilder.replace(line.range, newText);
+                    // Remove strikethrough if struck
+                    if (line.text.trim().startsWith('~~')) {
+                        const newText = line.text.replace(/^(\s*)~~(.*)~~(\s*)$/, '$1$2$3');
+                        editBuilder.replace(line.range, newText);
+                    }
                 }
             }
+        }
+
+        // Then handle the heading based on the new state of the lines
+        const headingLine = document.lineAt(startLineNumber);
+        const headingIsStruck = headingLine.text.trim().startsWith('~~');
+        
+        if (shouldStrike && !headingIsStruck) {
+            // Add strikethrough to heading
+            const newText = headingLine.text.replace(/^(\s*)(.*)(\s*)$/, '$1~~$2~~$3');
+            editBuilder.replace(headingLine.range, newText);
+        } else if (!shouldStrike && headingIsStruck) {
+            // Remove strikethrough from heading
+            const newText = headingLine.text.replace(/^(\s*)~~(.*)~~(\s*)$/, '$1$2$3');
+            editBuilder.replace(headingLine.range, newText);
         }
     });
 }
