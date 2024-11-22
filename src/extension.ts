@@ -76,7 +76,8 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 function isHeading(text: string): boolean {
-    return /^#{1,6}\s/.test(text.trim());
+    const trimmed = text.trim().replace(/^~~(.*)~~$/, '$1');
+    return /^#{1,6}\s/.test(trimmed);
 }
 
 function toggleStrikethroughLine(editor: vscode.TextEditor, line: vscode.TextLine) {
