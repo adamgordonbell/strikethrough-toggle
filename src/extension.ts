@@ -106,6 +106,19 @@ function toggleStrikethroughBelowHeading(editor: vscode.TextEditor, startLineNum
     }
 
     editor.edit(editBuilder => {
+        // First, handle the heading itself
+        const headingLine = document.lineAt(startLineNumber);
+        if (headingLine.text.trim().startsWith('~~') && headingLine.text.trim().endsWith('~~')) {
+            // Remove strikethrough from heading
+            const newText = headingLine.text.replace(/^(\s*)~~(.*)~~(\s*)$/, '$1$2$3');
+            editBuilder.replace(headingLine.range, newText);
+        } else {
+            // Add strikethrough to heading
+            const newText = headingLine.text.replace(/^(\s*)(.*)(\s*)$/, '$1~~$2~~$3');
+            editBuilder.replace(headingLine.range, newText);
+        }
+
+        // Then handle all lines below the heading
         for (let i = startLineNumber + 1; i <= endLineNumber; i++) {
             const line = document.lineAt(i);
             if (line.text.trim() !== '') {
