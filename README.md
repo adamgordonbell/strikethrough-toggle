@@ -88,11 +88,11 @@ Replace `strikethrough-toggle-0.0.1.vsix` with the actual name of your `.vsix` f
 3. Press Cmd+Enter (or Ctrl+Enter on Windows/Linux)
 4. The line should be wrapped in strikethrough syntax (~~) if it wasn't already, or the strikethrough should be removed if it was already present
 
-## Troubleshooting
+~~## Troubleshooting~~
 
-If the extension doesn't work as expected:
-1. Ensure you've restarted VS Code after installation
-2. Check that you're working in a Markdown file
-3. Verify that the keyboard shortcut is correctly set in your `keybindings.json`
+~~If the extension doesn't work as expected:~~
+~~1. Ensure you've restarted VS Code after installation~~
+~~2. Check that you're working in a Markdown file~~
+~~3. Verify that the keyboard shortcut is correctly set in your `keybindings.json`~~
 
-For any issues or feature requests, please open an issue on the GitHub repository.
+~~For any issues or feature requests, please open an issue on the GitHub repository.~~
